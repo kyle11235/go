@@ -1,4 +1,4 @@
-# mygo
+# go
 
 ## go hello
 
@@ -7,8 +7,8 @@
 
 ## my hello
 
-        go install github.com/kyle11235/mygo/stringutil
-        go install github.com/kyle11235/mygo/hello
+        go install github.com/kyle11235/go/stringutil
+        go install github.com/kyle11235/go/hello
         hello
 
 ## tour
