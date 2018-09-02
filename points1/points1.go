@@ -1,8 +1,13 @@
 package main
 
 import (
+	"crypto/md5"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -41,10 +46,28 @@ type UserCouponList struct {
 	Items []UserCoupon `json:"items"`
 }
 
+// order
+type Order struct {
+	ID          string `json:"id"`
+	UserID      string `json:"userID"`
+	CouponName  string `json:"couponName"`
+	CouponCount int    `json:"couponCount"`
+	Status      string `json:"status"` // locked/audited
+}
+
+// order list
+type OrderList struct {
+	Items []Order `json:"items"`
+}
+
 // prefix
 const (
 	PREFIX_COUPON      = "coupon"
 	PREFIX_USER_COUPON = "user-coupon"
+	PREFIX_ORDER       = "order"
+	PREFIX_USER_ORDER  = "user-order"
+	STATUS_LOCKED      = "locked"
+	STATUS_AUDITED     = "audited"
 )
 
 // main
@@ -74,6 +97,12 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return t.moveCouponToUser(stub, args)
 	} else if function == "getUserCoupon" {
 		return t.getUserCoupon(stub, args)
+	} else if function == "createOrder" {
+		return t.createOrder(stub, args)
+	} else if function == "getOrder" {
+		return t.getOrder(stub, args)
+	} else if function == "auditOrder" {
+		return t.auditOrder(stub, args)
 	}
 
 	// result
@@ -82,6 +111,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	return shim.Error(message)
 }
 
+// ===========================================================
+// createCoupon
 // ===========================================================
 func (t *SimpleChaincode) createCoupon(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
@@ -110,26 +141,31 @@ func (t *SimpleChaincode) createCoupon(stub shim.ChaincodeStubInterface, args []
 	}
 	count, err := strconv.Atoi(args[3])
 	if err != nil {
-		return shim.Error("4rd argument must be a number")
+		return shim.Error("4th argument must be a number")
 	}
 
 	// check existence
-	compositeKey, err := stub.CreateCompositeKey(PREFIX_COUPON, []string{id})
-	couponBytes, err := stub.GetState(compositeKey)
+	var coupon *Coupon
+	coupon, err = getCouponByID(stub, id)
 	if err != nil {
 		return shim.Error("Failed to get coupon: " + err.Error())
-	} else if couponBytes != nil {
+	}
+	if coupon != nil {
 		fmt.Println("This coupon already exists: " + id)
 		return shim.Error("This coupon already exists: " + id)
 	}
 
 	// create
-	coupon := &Coupon{id, name, points, count, 0}
-	newCouponBytes, err := json.Marshal(coupon)
+	key, err := stub.CreateCompositeKey(PREFIX_COUPON, []string{id})
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	err = stub.PutState(compositeKey, newCouponBytes)
+	coupon = &Coupon{id, name, points, count, 0}
+	bytes, err := json.Marshal(coupon)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	err = stub.PutState(key, bytes)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -137,6 +173,8 @@ func (t *SimpleChaincode) createCoupon(stub shim.ChaincodeStubInterface, args []
 	return shim.Success(nil)
 }
 
+// ===========================================================
+// getCoupon
 // ===========================================================
 func (t *SimpleChaincode) getCoupon(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
@@ -172,6 +210,8 @@ func (t *SimpleChaincode) getCoupon(stub shim.ChaincodeStubInterface, args []str
 }
 
 // ===========================================================
+// moveCouponToUser
+// ===========================================================
 func (t *SimpleChaincode) moveCouponToUser(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
 
@@ -197,63 +237,40 @@ func (t *SimpleChaincode) moveCouponToUser(stub shim.ChaincodeStubInterface, arg
 	userID := args[2]
 
 	// get coupon
-	coupon := Coupon{}
-
-	couponKey, err := stub.CreateCompositeKey(PREFIX_COUPON, []string{couponID})
-	couponBytes, err := stub.GetState(couponKey)
+	var coupon *Coupon
+	coupon, err = getCouponByID(stub, couponID)
 	if err != nil {
 		return shim.Error("Failed to get coupon: " + err.Error())
 	}
-	if couponBytes == nil {
+	if coupon == nil {
 		fmt.Println("This coupon NOT exists: " + couponID)
 		return shim.Error("This coupon NOT exists: " + couponID)
-	}
-	err = json.Unmarshal([]byte(couponBytes), &coupon)
-	if err != nil {
-		return shim.Error(err.Error())
 	}
 
 	// update coupon
 	coupon.Used = coupon.Used + count
-	newCouponBytes, err := json.Marshal(coupon)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	err = stub.PutState(couponKey, newCouponBytes)
+	err = updateCoupon(stub, coupon)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	// get user coupon
-	userCoupon := UserCoupon{}
+	// get user coupon - call a private function
+	var userCoupon *UserCoupon
+	userCoupon, err = getUserCouponByID(stub, userID, couponID)
 
-	userCouponKey, err := stub.CreateCompositeKey(PREFIX_USER_COUPON, []string{userID, couponID})
-	userCouponBytes, err := stub.GetState(userCouponKey)
 	if err != nil {
 		return shim.Error("Failed to get user coupon: " + err.Error())
 	}
-	if userCouponBytes != nil {
-		// update
-		err = json.Unmarshal([]byte(userCouponBytes), &userCoupon)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
+	if userCoupon != nil {
+		//update
 		userCoupon.Total = userCoupon.Total + count
 	} else {
 		// create
-		userCoupon.UserID = userID
-		userCoupon.CouponID = couponID
-		userCoupon.Points = coupon.Points
-		userCoupon.Total = count
-		userCoupon.Used = 0
+		userCoupon = &UserCoupon{userID, couponID, coupon.Name, coupon.Points, count, 0}
 	}
 
 	// update user coupon
-	newUserCouponBytes, err := json.Marshal(userCoupon)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	err = stub.PutState(userCouponKey, newUserCouponBytes)
+	err = updateUserCoupon(stub, userCoupon)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -262,6 +279,8 @@ func (t *SimpleChaincode) moveCouponToUser(stub shim.ChaincodeStubInterface, arg
 	return shim.Success(nil)
 }
 
+// ===========================================================
+// getUserCoupon
 // ===========================================================
 func (t *SimpleChaincode) getUserCoupon(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
@@ -301,4 +320,320 @@ func (t *SimpleChaincode) getUserCoupon(stub shim.ChaincodeStubInterface, args [
 
 	fmt.Println("get user coupon success")
 	return shim.Success(listBytes)
+}
+
+// ===========================================================
+// createOrder
+// ===========================================================
+func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+	// check args
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments. Expecting 4")
+	}
+	if len(args[0]) <= 0 {
+		return shim.Error("1st argument must be a non-empty string")
+	}
+	if len(args[1]) <= 0 {
+		return shim.Error("2nd argument must be a non-empty string")
+	}
+	if len(args[2]) <= 0 {
+		return shim.Error("3rd argument must be a non-empty string")
+	}
+	if len(args[3]) <= 0 {
+		return shim.Error("4th argument must be a non-empty number")
+	}
+
+	id := args[0]
+	userID := args[1]
+	couponID := args[2]
+	count, err := strconv.Atoi(args[3])
+	if err != nil {
+		return shim.Error("4th argument must be a number")
+	}
+
+	// check order existence
+	var order *Order
+	order, err = getOrderByID(stub, id)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if order != nil {
+		return shim.Error("order already exists")
+	}
+
+	// check coupon
+	userCoupon, err := getUserCouponByID(stub, userID, couponID)
+	if err != nil {
+		return shim.Error("Failed to get user coupon: " + err.Error())
+	}
+	if userCoupon == nil {
+		return shim.Error("Failed to get user coupon")
+	}
+	if count > (userCoupon.Total - userCoupon.Used) {
+		return shim.Error("Not enough coupon left")
+	}
+
+	// update user coupon
+	userCoupon.Used = userCoupon.Used + count
+	err = updateUserCoupon(stub, userCoupon)
+	if err != nil {
+		shim.Error(err.Error())
+	}
+
+	// create order
+	order = &Order{id, userID, userCoupon.Name, count, STATUS_LOCKED}
+	err = createOrder(stub, order)
+	if err != nil {
+		shim.Error(err.Error())
+	}
+
+	fmt.Println("create order success")
+	return shim.Success(nil)
+}
+
+// ===========================================================
+// getOrder
+// ===========================================================
+func (t *SimpleChaincode) getOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+	iterator, err := stub.GetStateByPartialCompositeKey(PREFIX_ORDER, nil)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if iterator == nil {
+		return shim.Error("getOrder error")
+	}
+	defer iterator.Close()
+
+	list := OrderList{make([]Order, 0)}
+	for iterator.HasNext() {
+		next, err := iterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		item := Order{}
+		itemBytes := next.GetValue()
+		if itemBytes != nil {
+			err = json.Unmarshal(itemBytes, &item)
+		}
+		list.Items = append(list.Items, item)
+	}
+	listBytes, err := json.Marshal(list)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	fmt.Println("get order success")
+	return shim.Success(listBytes)
+}
+
+// ===========================================================
+// auditOrder
+// ===========================================================
+func (t *SimpleChaincode) auditOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+	// check args
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	id := args[0]
+
+	var order *Order
+	order, err = getOrderByID(stub, id)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if order == nil {
+		return shim.Error("cannot find this order")
+	}
+
+	order.Status = STATUS_AUDITED
+	err = updateOrder(stub, order)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	fmt.Println("audit order success")
+	return shim.Success(nil)
+}
+
+// ===========================================================
+// below are private functions
+// ===========================================================
+
+// ===========================================================
+// private getCouponByID
+// ===========================================================
+func getCouponByID(stub shim.ChaincodeStubInterface, id string) (*Coupon, error) {
+
+	var err error
+
+	key, err := stub.CreateCompositeKey(PREFIX_COUPON, []string{id})
+	bytes, err := stub.GetState(key)
+	if err != nil {
+		return nil, err
+	}
+
+	if bytes == nil {
+		return nil, nil
+	}
+
+	out := &Coupon{}
+	err = json.Unmarshal([]byte(bytes), &out)
+	if err != nil {
+		return nil, err
+	}
+
+	return out, err
+}
+
+// ===========================================================
+// private getUserCouponByID
+// ===========================================================
+func getUserCouponByID(stub shim.ChaincodeStubInterface, userID string, couponID string) (*UserCoupon, error) {
+
+	var err error
+
+	key, err := stub.CreateCompositeKey(PREFIX_USER_COUPON, []string{userID, couponID})
+	bytes, err := stub.GetState(key)
+	if err != nil {
+		return nil, err
+	}
+
+	if bytes == nil {
+		return nil, nil
+	}
+
+	out := &UserCoupon{}
+	err = json.Unmarshal([]byte(bytes), &out)
+	if err != nil {
+		return nil, err
+	}
+
+	return out, err
+}
+
+// ===========================================================
+// private getOrderByID
+// ===========================================================
+func getOrderByID(stub shim.ChaincodeStubInterface, id string) (*Order, error) {
+
+	var err error
+
+	key, err := stub.CreateCompositeKey(PREFIX_ORDER, []string{id})
+	bytes, err := stub.GetState(key)
+	if err != nil {
+		return nil, err
+	}
+
+	if bytes == nil {
+		return nil, nil
+	}
+
+	out := &Order{}
+	err = json.Unmarshal([]byte(bytes), &out)
+	if err != nil {
+		return nil, err
+	}
+
+	return out, err
+}
+
+// ===========================================================
+// private updateUserCoupon
+// ===========================================================
+func updateUserCoupon(stub shim.ChaincodeStubInterface, userCoupon *UserCoupon) error {
+
+	var err error
+
+	bytes, err := json.Marshal(userCoupon)
+	if err != nil {
+		return err
+	}
+	key, err := stub.CreateCompositeKey(PREFIX_USER_COUPON, []string{userCoupon.UserID, userCoupon.CouponID})
+	err = stub.PutState(key, bytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ===========================================================
+// private updateCoupon
+// ===========================================================
+func updateCoupon(stub shim.ChaincodeStubInterface, coupon *Coupon) error {
+
+	var err error
+
+	bytes, err := json.Marshal(coupon)
+	if err != nil {
+		return err
+	}
+	key, err := stub.CreateCompositeKey(PREFIX_COUPON, []string{coupon.ID})
+	err = stub.PutState(key, bytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ===========================================================
+// private updateOrder
+// ===========================================================
+func updateOrder(stub shim.ChaincodeStubInterface, order *Order) error {
+
+	var err error
+
+	bytes, err := json.Marshal(order)
+	if err != nil {
+		return err
+	}
+	key, err := stub.CreateCompositeKey(PREFIX_ORDER, []string{order.ID})
+	err = stub.PutState(key, bytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ===========================================================
+// private createOrder
+// ===========================================================
+func createOrder(stub shim.ChaincodeStubInterface, order *Order) error {
+
+	var err error
+
+	bytes, err := json.Marshal(order)
+	if err != nil {
+		return err
+	}
+	key, err := stub.CreateCompositeKey(PREFIX_ORDER, []string{order.ID})
+	err = stub.PutState(key, bytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// md5
+func getMd5(s string) string {
+	h := md5.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// guid
+func getGUID() string {
+	b := make([]byte, 48)
+
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		return ""
+	}
+	return getMd5(base64.URLEncoding.EncodeToString(b))
 }
