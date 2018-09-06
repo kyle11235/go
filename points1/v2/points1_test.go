@@ -215,6 +215,35 @@ func TestGetUserCoupon(t *testing.T) {
 	fmt.Println("------  end  ------")
 }
 
+// ===========================================================
+// deleteAll
+// ===========================================================
+func TestDeleteAll(t *testing.T) {
+	// method
+	method := "deleteAll"
+	fmt.Println("------ start ------ ", method)
+
+	// other args
+	argsArray := []string{}
+
+	// all args
+	var args [][]byte
+	args = append(args, []byte(method))
+	if len(argsArray) > 0 {
+		fmt.Printf("-")
+	}
+	for i := 0; i < len(argsArray); i++ {
+		args = append(args, []byte(argsArray[i]))
+		fmt.Printf("p%d=%s, ", i, args[i])
+	}
+
+	// invoke
+	response := stub.MockInvoke("uuid", args)
+	printResponse(response)
+
+	fmt.Println("------  end  ------")
+}
+
 // print
 func printResponse(response pb.Response) {
 	fmt.Printf("- status=")
@@ -225,10 +254,10 @@ func printResponse(response pb.Response) {
 	fmt.Println(string(response.GetPayload()))
 }
 
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createCoupon","args":["couponID", "couponName", "999", "100"],"chaincodeVer":"v3"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"moveCouponToUser","args":["couponID", "10", "userID"],"chaincodeVer":"v3"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getCoupon","args":[],"chaincodeVer":"v3"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getUserCoupon","args":["userID"],"chaincodeVer":"v3"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createOrder","args":["orderID", "userID", "couponID", "5"],"chaincodeVer":"v3"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"auditOrder","args":["orderID"],"chaincodeVer":"v3"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getOrder","args":[],"chaincodeVer":"v3"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createCoupon","args":["couponID", "couponName", "999", "100"],"chaincodeVer":"v2"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"moveCouponToUser","args":["couponID", "10", "userID"],"chaincodeVer":"v2"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getCoupon","args":[],"chaincodeVer":"v2"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getUserCoupon","args":["userID"],"chaincodeVer":"v2"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createOrder","args":["orderID", "userID", "couponID", "5"],"chaincodeVer":"v2"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"auditOrder","args":["orderID"],"chaincodeVer":"v2"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getOrder","args":[],"chaincodeVer":"v2"}'
