@@ -72,3 +72,6 @@ func printResponse(heading string, response pb.Response) {
 	fmt.Println(response.GetStatus())
 
 }
+
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:3100/bcsgw/rest/v1/transaction/invocation -d '{"channel":"army","chaincode":"sacc","method":"set","args":["kyle", "100"],"chaincodeVer":"v1"}'
+// curl -H "Content-type:application/json" -X POST http://129.213.123.198:3100/bcsgw/rest/v1/transaction/query -d '{"channel":"army","chaincode":"sacc","method":"get","args":["kyle"],"chaincodeVer":"v1"}'
