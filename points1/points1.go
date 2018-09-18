@@ -20,12 +20,12 @@ type SimpleChaincode struct {
 
 // coupon
 type Coupon struct {
-	ObjectType string `json:"docType"`
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Points     int    `json:"points"`
-	Total      int    `json:"total"`
-	Used       int    `json:"used"`
+	DocType string `json:"docType"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Points  int    `json:"points"`
+	Total   int    `json:"total"`
+	Used    int    `json:"used"`
 }
 
 // coupon list
@@ -35,6 +35,7 @@ type CouponList struct {
 
 // user coupon
 type UserCoupon struct {
+	DocType  string `json:"docType"`
 	UserID   string `json:"userID"`
 	CouponID string `json:"couponID"`
 	Name     string `json:"couponName"`
@@ -50,7 +51,7 @@ type UserCouponList struct {
 
 // order
 type Order struct {
-	ObjectType  string `json:"docType"`
+	DocType     string `json:"docType"`
 	ID          string `json:"id"`
 	UserID      string `json:"userID"`
 	CouponName  string `json:"couponName"`
@@ -65,7 +66,7 @@ type OrderList struct {
 
 // prefix
 const (
-	PREFIX_COUPON      = "coupon2"
+	PREFIX_COUPON      = "coupon"
 	PREFIX_USER_COUPON = "user-coupon"
 	PREFIX_ORDER       = "order"
 	PREFIX_USER_ORDER  = "user-order"
@@ -182,6 +183,42 @@ func (t *SimpleChaincode) createCoupon(stub shim.ChaincodeStubInterface, args []
 // getCoupon
 // ===========================================================
 func (t *SimpleChaincode) getCoupon(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+	iterator, err := stub.GetStateByPartialCompositeKey(PREFIX_COUPON, nil)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if iterator == nil {
+		return shim.Error("getCoupon error")
+	}
+	defer iterator.Close()
+
+	list := CouponList{make([]Coupon, 0)}
+	for iterator.HasNext() {
+		next, err := iterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		item := Coupon{}
+		itemBytes := next.GetValue()
+		if itemBytes != nil {
+			err = json.Unmarshal(itemBytes, &item)
+		}
+		list.Items = append(list.Items, item)
+	}
+	listBytes, err := json.Marshal(list)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	fmt.Println("get coupon success")
+	return shim.Success(listBytes)
+}
+
+// ===========================================================
+// getCouponRich
+// ===========================================================
+func (t *SimpleChaincode) getCouponRich(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	queryString := "{\"selector\":{\"docType\":\"" + PREFIX_COUPON + "\"}}"
 
 	queryResults, err := getQueryResultForQueryString(stub, queryString)
@@ -248,7 +285,7 @@ func (t *SimpleChaincode) moveCouponToUser(stub shim.ChaincodeStubInterface, arg
 		userCoupon.Total = userCoupon.Total + count
 	} else {
 		// create
-		userCoupon = &UserCoupon{userID, couponID, coupon.Name, coupon.Points, count, 0}
+		userCoupon = &UserCoupon{PREFIX_USER_COUPON, userID, couponID, coupon.Name, coupon.Points, count, 0}
 	}
 
 	// update user coupon
@@ -265,6 +302,49 @@ func (t *SimpleChaincode) moveCouponToUser(stub shim.ChaincodeStubInterface, arg
 // getUserCoupon
 // ===========================================================
 func (t *SimpleChaincode) getUserCoupon(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	userID := args[0]
+
+	iterator, err := stub.GetStateByPartialCompositeKey(PREFIX_USER_COUPON, []string{userID})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if iterator == nil {
+		return shim.Error("getUserCoupon error")
+	}
+	defer iterator.Close()
+
+	list := UserCouponList{make([]UserCoupon, 0)}
+	for iterator.HasNext() {
+		next, err := iterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		item := UserCoupon{}
+		itemBytes := next.GetValue()
+		if itemBytes != nil {
+			err = json.Unmarshal(itemBytes, &item)
+		}
+		list.Items = append(list.Items, item)
+	}
+	listBytes, err := json.Marshal(list)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	fmt.Println("get user coupon success")
+	return shim.Success(listBytes)
+}
+
+// ===========================================================
+// getUserCouponRich
+// ===========================================================
+func (t *SimpleChaincode) getUserCouponRich(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	queryString := "{\"selector\":{\"docType\":\"" + PREFIX_USER_COUPON + "\"}}"
 
 	queryResults, err := getQueryResultForQueryString(stub, queryString)
@@ -348,6 +428,42 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 // getOrder
 // ===========================================================
 func (t *SimpleChaincode) getOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+	iterator, err := stub.GetStateByPartialCompositeKey(PREFIX_ORDER, nil)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if iterator == nil {
+		return shim.Error("getOrder error")
+	}
+	defer iterator.Close()
+
+	list := OrderList{make([]Order, 0)}
+	for iterator.HasNext() {
+		next, err := iterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		item := Order{}
+		itemBytes := next.GetValue()
+		if itemBytes != nil {
+			err = json.Unmarshal(itemBytes, &item)
+		}
+		list.Items = append(list.Items, item)
+	}
+	listBytes, err := json.Marshal(list)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	fmt.Println("get order success")
+	return shim.Success(listBytes)
+}
+
+// ===========================================================
+// getOrderRich
+// ===========================================================
+func (t *SimpleChaincode) getOrderRich(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	queryString := "{\"selector\":{\"docType\":\"" + PREFIX_ORDER + "\"}}"
 
 	queryResults, err := getQueryResultForQueryString(stub, queryString)
@@ -388,29 +504,26 @@ func (t *SimpleChaincode) auditOrder(stub shim.ChaincodeStubInterface, args []st
 	return shim.Success(nil)
 }
 
-// Deletes an entity from state
+// ===========================================================
+// deleteAll
+// ===========================================================
 func (t *SimpleChaincode) deleteAll(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
-
-	key, err := stub.CreateCompositeKey(PREFIX_COUPON, nil)
-	err = stub.DelState(key)
+	err = deleteAll(stub, PREFIX_COUPON)
 	if err != nil {
-		return shim.Error("Failed to delete state")
+		return shim.Error(err.Error())
 	}
-	key, err = stub.CreateCompositeKey(PREFIX_ORDER, nil)
-	err = stub.DelState(key)
+	err = deleteAll(stub, PREFIX_ORDER)
 	if err != nil {
-		return shim.Error("Failed to delete state")
+		return shim.Error(err.Error())
 	}
-	key, err = stub.CreateCompositeKey(PREFIX_USER_COUPON, nil)
-	err = stub.DelState(key)
+	err = deleteAll(stub, PREFIX_USER_COUPON)
 	if err != nil {
-		return shim.Error("Failed to delete state")
+		return shim.Error(err.Error())
 	}
-	key, err = stub.CreateCompositeKey(PREFIX_USER_ORDER, nil)
-	err = stub.DelState(key)
+	err = deleteAll(stub, PREFIX_USER_ORDER)
 	if err != nil {
-		return shim.Error("Failed to delete state")
+		return shim.Error(err.Error())
 	}
 
 	return shim.Success(nil)
@@ -621,6 +734,31 @@ func getQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString 
 	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
 
 	return buffer.Bytes(), nil
+}
+
+// ===========================================================
+// private deleteAll
+// ===========================================================
+func deleteAll(stub shim.ChaincodeStubInterface, prefix string) error {
+	var err error
+	iterator, err := stub.GetStateByPartialCompositeKey(prefix, nil)
+	if err != nil {
+		return err
+	}
+	if iterator != nil {
+		for iterator.HasNext() {
+			next, err := iterator.Next()
+			if err != nil {
+				return err
+			}
+			err = stub.DelState(next.GetKey())
+			if err != nil {
+				return err
+			}
+		}
+	}
+	defer iterator.Close()
+	return nil
 }
 
 // md5
