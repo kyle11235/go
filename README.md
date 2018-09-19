@@ -42,9 +42,3 @@
 
         - complile on mac, execute on linux:
         GOOS=linux GOARCH=amd64 go build ./hello.
-
-        - invoke
-        curl -H "Content-type:application/json" -X POST http://129.213.107.166:4100/bcsgw/rest/v1/transaction/invocation -d '{"channel":"myorgorderer","chaincode":"mysacc","method":"set","args":["a", "200"],"chaincodeVer":"v2"}'
-
-        - query
-        curl -H "Content-type:application/json" -X POST http://129.213.107.166:4100/bcsgw/rest/v1/transaction/query -d '{"channel":"myorgorderer","chaincode":"mysacc","method":"query","args":["a"],"chaincodeVer":"v2"}'
