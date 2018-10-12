@@ -34,15 +34,16 @@ func call(method string, argsArray []string) {
 	// all args
 	var args [][]byte
 	args = append(args, []byte(method))
+	fmt.Printf("- args=[")
+	fmt.Printf("p0=%s", method)
 	if argsArray != nil {
-		if len(argsArray) > 0 {
-			fmt.Printf("-")
-		}
 		for i := 0; i < len(argsArray); i++ {
 			args = append(args, []byte(argsArray[i]))
-			fmt.Printf("p%d=%s, ", i, args[i])
+			fmt.Printf(",p%d=%s", i+1, argsArray[i])
 		}
 	}
+	fmt.Printf("]")
+	fmt.Println("")
 	// invoke
 	response := stub.MockInvoke("uuid", args)
 	fmt.Printf("- status=")
@@ -55,15 +56,22 @@ func call(method string, argsArray []string) {
 	fmt.Println("")
 }
 
-// curl
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createCoupon","args":["couponID", "couponName", "999", "100"],"chaincodeVer":"v2"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"moveCouponToUser","args":["couponID", "10", "userID"],"chaincodeVer":"v2"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getCoupon","args":[],"chaincodeVer":"v2"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getUserCoupon","args":["userID"],"chaincodeVer":"v2"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createOrder","args":["orderID", "userID", "couponID", "5"],"chaincodeVer":"v2"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"auditOrder","args":["orderID"],"chaincodeVer":"v2"}'
-// curl -H "Content-type:application/json" -X POST http://129.213.123.198:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getOrder","args":[],"chaincodeVer":"v2"}'
+/*
+
+// old
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createCoupon","args":["couponID", "couponName", "999", "100"],"chaincodeVer":"v2"}'
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"moveCouponToUser","args":["couponID", "10", "userID"],"chaincodeVer":"v2"}'
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getCoupon","args":[],"chaincodeVer":"v2"}'
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getUserCoupon","args":["userID"],"chaincodeVer":"v2"}'
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"createOrder","args":["orderID", "userID", "couponID", "5"],"chaincodeVer":"v2"}'
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/invocation -d '{"channel":"test1orderer","chaincode":"points1","method":"auditOrder","args":["orderID"],"chaincodeVer":"v2"}'
+curl -H "Content-type:application/json" -X POST http://xxx:4111/bcsgw/rest/v1/transaction/query -d '{"channel":"test1orderer","chaincode":"points1","method":"getOrder","args":[],"chaincodeVer":"v2"}'
+
+// new
+curl -u username:password -H "Content-type:application/json" -X POST https://xxx.xxx.xxx.xxx.com:443/restproxy1/bcsgw/rest/v1/transaction/invocation -d '{"channel":"xxx","chaincode":"xxx","method":"xxx","args":["1000000", "3000067", "MINIPRESS TABLET 1 MG 10X10'S", "9557328004919", "5002213", "28/2/2021", "1/2/2018", "PMB", "final destination"],"chaincodeVer":"v1"}'
 
 // cli
-// peer chaincode invoke -n mycc -c '{"Args":["createCoupon", "couponID", "couponName", "999", "100"]}' -C myc
-// peer chaincode invoke -n mycc -c '{"Args":["getCoupon"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["createCoupon", "couponID", "couponName", "999", "100"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["getCoupon"]}' -C myc
+
+*/
