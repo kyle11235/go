@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -97,6 +98,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return t.createCoupon(stub, args)
 	} else if function == "getCoupon" {
 		return t.getCoupon(stub, args)
+	} else if function == "getCouponByID" {
+		return t.getCouponByID(stub, args)
+	} else if function == "getCouponHistoryByID" {
+		return t.getCouponHistoryByID(stub, args)
 	} else if function == "moveCouponToUser" {
 		return t.moveCouponToUser(stub, args)
 	} else if function == "getUserCoupon" {
@@ -222,6 +227,63 @@ func (t *SimpleChaincode) getCouponRich(stub shim.ChaincodeStubInterface, args [
 	queryString := "{\"selector\":{\"docType\":\"" + PREFIX_COUPON + "\"}}"
 
 	queryResults, err := getQueryResultForQueryString(stub, queryString)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(queryResults)
+}
+
+// ===========================================================
+// getCouponByID
+// ===========================================================
+func (t *SimpleChaincode) getCouponByID(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	if len(args[0]) <= 0 {
+		return shim.Error("1st argument must be a non-empty string")
+	}
+
+	id := args[0]
+
+	var coupon *Coupon
+	coupon, err = getCouponByID(stub, id)
+	if err != nil {
+		return shim.Error("Failed to get coupon: " + err.Error())
+	}
+	if coupon == nil {
+		fmt.Println("This coupon does not exist: " + id)
+		return shim.Error("This coupon does not exist: " + id)
+	}
+	bytes, err := json.Marshal(coupon)
+	if err != nil {
+		return shim.Error("Failed to get coupon: " + err.Error())
+	}
+
+	return shim.Success(bytes)
+}
+
+// ===========================================================
+// getCouponHistoryByID
+// ===========================================================
+func (t *SimpleChaincode) getCouponHistoryByID(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	if len(args[0]) <= 0 {
+		return shim.Error("1st argument must be a non-empty string")
+	}
+
+	id := args[0]
+
+	key, err := stub.CreateCompositeKey(PREFIX_COUPON, []string{id})
+	queryResults, err := getHistoryForKey(stub, key)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -689,6 +751,68 @@ func createOrder(stub shim.ChaincodeStubInterface, order *Order) error {
 	}
 
 	return nil
+}
+
+// ===========================================================
+// private getHistoryForKey
+// ===========================================================
+func getHistoryForKey(stub shim.ChaincodeStubInterface, key string) ([]byte, error) {
+
+	var err error
+
+	resultsIterator, err := stub.GetHistoryForKey(key)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	// buffer is a JSON array containing historic values for the key/value pair
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+		// Add a comma before array members, suppress it for the first array member
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(response.TxId)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Value\":")
+		// if it was a delete operation on given key, then we need to set the
+		//corresponding value null. Else, we will write the response.Value
+		//as-is (as the Value itself a JSON vehiclePart)
+		if response.IsDelete {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(response.Value))
+		}
+
+		buffer.WriteString(", \"Timestamp\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"IsDelete\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(strconv.FormatBool(response.IsDelete))
+		buffer.WriteString("\"")
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	fmt.Printf("- getHistoryForRecord returning:\n%s\n", buffer.String())
+
+	return buffer.Bytes(), nil
 }
 
 // =========================================================================================
