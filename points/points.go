@@ -236,7 +236,6 @@ func updateUserPoint(stub shim.ChaincodeStubInterface, user string, merchant str
 		}
 		fmt.Printf("User old point value %s \n", string(userPointBytes))
 	} else {
-		fmt.Println("初始化用户积分")
 		userPoint.UserId = user
 		userPoint.MerchantId = merchant
 		userPoint.Point = 0
