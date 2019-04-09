@@ -1,20 +1,21 @@
 # go
 
-## go hello
-
-        go get github.com/golang/example/hello (fetch/build/install into $workspace/bin)
-        hello
-
-## my hello
-
-        go install github.com/kyle11235/go/hello
-        hello
-
 ## tour
 
         cd tour
-        go build test.go
-        ./test
+        go build basic.go && ./basic
+
+## install
+
+- go hello
+
+        go get github.com/golang/example/hello (fetch/build/install into $workspace/bin)
+        ./hello
+
+- my hello
+
+        go install github.com/kyle11235/go/hello (build/install into $workspace/bin)
+        ./hello
 
 ## chaincode
 
@@ -30,14 +31,6 @@
                 node - https://fabric-shim.github.io/ChaincodeStub.html
 
 ## others
-
-        - auto complete issue
-        manual suggestion trigger has beed set to cmd + 1 in keyboard shortcuts
-        fix auto complete issue:
-                Run Go: Install/Update Tools in VSCode
-                cd ~/go/bin
-                ./gocode close
-
 
         - complile on mac, execute on linux:
         GOOS=linux GOARCH=amd64 go build ./hello.
