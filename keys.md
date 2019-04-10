@@ -1,8 +1,5 @@
 # vscode keys
 
-- box selection = shift + option + mouse
-- edit multiple lines = option + command + up/down arrow
-- trigger left panel = command + b
 - disable explorer window to reveal file for current opening file = uncheck autoReveal
 - manual suggestion trigger = has beed set to cmd + 1 in keyboard shortcuts
 - fix auto complete issue
@@ -11,6 +8,10 @@
         cd ~/go/bin
         ./gocode close
 
+- box selection = shift + option + mouse
+- edit multiple lines = option + command + up/down arrow
+- trigger left panel = command + b
+- open/close terminal = control + `
 
 ## Basic Editing
 Key	Command	Command id

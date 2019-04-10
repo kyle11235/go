@@ -2,8 +2,14 @@
 
 ## tour
 
+- go tour
+
+        go tool tour
+
+- my tour
+
         cd tour
-        go build basic.go && ./basic
+        go build tour.go && ./tour
 
 ## install
 
@@ -32,5 +38,6 @@
 
 ## others
 
-        - complile on mac, execute on linux:
+- complile on mac, execute on linux:
+
         GOOS=linux GOARCH=amd64 go build ./hello.

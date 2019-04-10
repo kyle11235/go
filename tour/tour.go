@@ -149,7 +149,7 @@ func main() {
 	fmt.Println(v1, v2, v3, *p2, p2.X)
 	// {1 2} {1 0} {0 0} {4 2} 4
 
-	// 7. array
+	// 7. array - static length
 	var arr1 [2]string
 	arr1[0] = "Hello"
 	arr1[1] = "World"
@@ -160,7 +160,7 @@ func main() {
 	arr1 = [2]string{"Hello", "World"}
 	fmt.Println(arr1) // [Hello World]
 
-	// 8. slice -  a view/reference to an array. like java arraylist
+	// 8. slice -  dynamatic length, a view/reference to an array. like java arraylist
 
 	// 1) make
 	s3 := make([]int, 5)    // len = 5, cap = 5
