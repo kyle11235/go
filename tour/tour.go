@@ -93,7 +93,7 @@ func main() {
 
 	// 2. variable
 	var i, j = 100, "golang"
-	fmt.Println(c, python, java, i, j) // false false false 100 golang
+	fmt.Println(java, golang, nodejs, i, j) // false false false 100 golang
 
 	// implicit variable
 	d := "d"

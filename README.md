@@ -9,19 +9,29 @@
 - my tour
 
         cd tour
-        go build tour.go && ./tour
+        go run tour.go (go build tour.go && ./tour)
 
-## install
+## install binary
 
-- go hello
+- go get (only checks missing, -u checks update, go help get)
 
-        go get github.com/golang/example/hello (fetch/build/install into $workspace/bin)
+        go get github.com/golang/example/hello (download/install into $workspace/bin)
         ./hello
 
-- my hello
+- local
 
-        go install github.com/kyle11235/go/hello (build/install into $workspace/bin)
+        go install github.com/kyle11235/go/hello (install into $workspace/bin)
         ./hello
+
+## install package
+
+- go get
+
+        go get -u --tags nopkcs11 github.com/hyperledger/fabric/core/chaincode/shim (download/build/install into $workspace/pkg)
+
+- local
+
+        go install github.com/kyle11235/go/pkpath (build/install into $workspace/pkg)
 
 ## chaincode
 
@@ -38,6 +48,6 @@
 
 ## others
 
-- complile on mac, execute on linux:
+- build for other OS architecture
 
-        GOOS=linux GOARCH=amd64 go build ./hello.
+        GOOS=linux GOARCH=amd64 go build ./hello
