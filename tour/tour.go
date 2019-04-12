@@ -5,14 +5,12 @@ import (
 	"io"
 	"math"
 	"runtime"
-	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
 // variable
-var java, golang, nodejs bool
+var i, java, golang, nodejs = 10, false, false, true
 
 // Vertex is struct
 type Vertex struct {
@@ -92,8 +90,8 @@ func main() {
 	fmt.Println(a, b) // b a
 
 	// 2. variable
-	var i, j = 100, "golang"
-	fmt.Println(java, golang, nodejs, i, j) // false false false 100 golang
+	var j = "string"
+	fmt.Println(i, j, java, nodejs, golang)
 
 	// implicit variable
 	d := "d"
@@ -315,41 +313,6 @@ func main() {
 	for i := range c1 {
 		fmt.Println(i) // receive blocks until the send side is ready
 	}
-
-	// 19. sync.Mutex
-	var count = 0
-	var lock sync.Mutex
-	produce := func() {
-		for {
-			lock.Lock()
-			if count == 0 {
-				count++
-				fmt.Println("produce, count=" + strconv.Itoa(count))
-			}
-			lock.Unlock()
-			time.Sleep(1 * time.Second)
-		}
-	}
-	consume := func() {
-		for {
-			lock.Lock()
-			if count == 1 {
-				count--
-				fmt.Println("consume, count=" + strconv.Itoa(count))
-			}
-			lock.Unlock()
-			time.Sleep(1 * time.Second)
-		}
-	}
-
-	go produce()
-	go produce()
-	go consume()
-	go consume()
-	// produce, count=1
-	// consume, count=0
-	// ...
-
-	time.Sleep(1000 * time.Second) // keep main
+	
 
 }
