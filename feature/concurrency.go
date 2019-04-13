@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// goroutine - multiplex independently executing functions—coroutines—onto a set of threads
 func main(){
 
 	var count = 0
@@ -46,3 +47,4 @@ func main(){
 	
 	time.Sleep(1000 * time.Second) // keep main
 }
+

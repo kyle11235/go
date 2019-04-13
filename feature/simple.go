@@ -10,6 +10,7 @@ func swap(x, y string) (string, string) {
 	return y, x
 }
 
+// function/interface/groutine/no exception/multiple return value...
 func main() {
 
 	j := 20 

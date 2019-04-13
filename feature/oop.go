@@ -1,5 +1,3 @@
-// package encapsulation/inheritance/polymorphism
-
 package main
 
 import (
@@ -46,6 +44,8 @@ func (c *WalkingCreature) Move() {
 	fmt.Println(c.Name + " is walking")
 }
 
+// oop - package encapsulation/inheritance/polymorphism
+// decoupled type and interface, no need to declare any relationship ahead of time
 func main() {
 
 	// polymorphism
