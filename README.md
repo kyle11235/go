@@ -10,7 +10,8 @@
 
 - go tour
 
-        go tool tour
+        go get golang.org/x/tour
+        tour
 
 - my tour
 

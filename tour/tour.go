@@ -31,20 +31,6 @@ func printSlice(s []int) {
 	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
 }
 
-// function as value
-func compute(value float64, fn func(float64) float64) float64 {
-	return fn(value)
-}
-
-// closure - funcion as return value
-func adder() func(int) int {
-	sum := 0 // this is variable in the closure
-	return func(x int) int {
-		sum += x
-		return sum
-	}
-}
-
 // method - function on type, with value as receiver
 func (v Vertex) test1() float64 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y)
@@ -236,34 +222,20 @@ func main() {
 	// Bell Labs, {10 20}
 	// Google, {30 40}
 
-	// 11. function as value
-	minus := func(x float64) float64 {
-		return x - 1
-	}
-	fmt.Println(compute(5, minus)) // 4
-
-	// 12. function closure
-	myadder := adder()
-	fmt.Println(
-		myadder(1),
-		myadder(2),
-	)
-	// 1 3
-
-	// 13. method - function on type
+	// 11. method - function on type
 	v4 := Vertex{3, 4}
 	fmt.Println(v4.test1()) // 5
 
-	// 14. interface - declaration and implementation of interface are decoupled with object/duck typing
+	// 12. interface - declaration and implementation of interface are decoupled with object/duck typing
 	var tester Tester = &v4
 	fmt.Printf("%v, %T\n", tester.test2(), tester) // 5, *main.Vertex - the type of the interface variable
 
-	// 15. error interface
+	// 13. error interface
 	if err := run(); err != nil {
 		fmt.Println(err)
 	}
 
-	// 16. reader
+	// 14. reader
 	r := strings.NewReader("Hello, Reader!")
 	bytes := make([]byte, 8)
 	for {
@@ -285,7 +257,7 @@ func main() {
 		bytes[:n] = ""
 	*/
 
-	// 17. goroutine - lightweight thread (not actually is) managed by the Go runtime
+	// 15. goroutine - lightweight thread (not actually is) managed by the Go runtime
 	say := func(s string) {
 		for i := 0; i < 2; i++ {
 			time.Sleep(1 * time.Second)
@@ -295,24 +267,7 @@ func main() {
 	go say("in routine") // start routine
 	say("in main")       // keep main
 
-	// 18. channel - https://www.jtolio.com/2016/03/go-channels-are-bad-and-you-should-feel-bad/
-	// ch <-v    // Send v to channel ch.
-	// v := <-ch  // Receive from ch, and assign value to v.
-
-	fibonacci := func(n int, c chan int) {
-		x, y := 0, 1
-		for i := 0; i < n; i++ {
-			c <- x
-			x, y = y, x+y
-		}
-		close(c)
-	}
-
-	c1 := make(chan int)
-	go fibonacci(6, c1)
-	for i := range c1 {
-		fmt.Println(i) // receive blocks until the send side is ready
-	}
+	
 	
 
 }

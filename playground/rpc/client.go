@@ -17,17 +17,17 @@ func main() {
 
 	// sync call
 	args := &api.Args{7, 8}
-	var reply int
-	err = client.Call("MyAPI.Multiply", args, &reply)
+	var result1 int
+	err = client.Call("MyAPI.Multiply", args, &result1)
 	if err != nil {
 		log.Fatal("rpc error:", err)
 	}
-	fmt.Printf("rpc %d*%d=%d\n", args.A, args.B, reply)
+	fmt.Printf("rpc %d*%d=%d\n", args.A, args.B, result1)
 
 	// Asynchronous call
-	result := new(api.Result)
-	divCall := client.Go("MyAPI.Divide", args, result, nil)
+	result2 := new(api.Result)
+	divCall := client.Go("MyAPI.Divide", args, result2, nil)
 	_ = <-divCall.Done // will be equal to divCall
-	fmt.Printf("rpc %d/%d=%d,%d\n", args.A, args.B, result.A, result.B)
+	fmt.Printf("rpc %d/%d=%d,%d\n", args.A, args.B, result2.A, result2.B)
 
 }

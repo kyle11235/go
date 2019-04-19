@@ -13,8 +13,8 @@ import (
 
 type MyAPI api.API
 
-func (s *MyAPI) Multiply(args *api.Args, reply *int) error {
-	*reply = args.A * args.B
+func (s *MyAPI) Multiply(args *api.Args, result *int) error {
+	*result = args.A * args.B
 	return nil
 }
 

@@ -1,36 +1,24 @@
-// A concurrent prime sieve
-
 package main
 
 import "fmt"
 
-// Send the sequence 2, 3, 4, ... to channel 'ch'.
-func Generate(ch chan<- int) {
-	for i := 2; ; i++ {
-		ch <- i // Send 'i' to channel 'ch'.
-	}
-}
-
-// Copy the values from channel 'in' to channel 'out',
-// removing those divisible by 'prime'.
-func Filter(in <-chan int, out chan<- int, prime int) {
-	for {
-		i := <-in // Receive value from 'in'.
-		if i%prime != 0 {
-			out <- i // Send 'i' to 'out'.
-		}
-	}
-}
-
-// The prime sieve: Daisy-chain Filter processes.
+// channel - https://www.jtolio.com/2016/03/go-channels-are-bad-and-bou-should-feel-bad/
 func main() {
-	ch := make(chan int) // Create a new channel.
-	go Generate(ch)      // Launch Generate goroutine.
-	for i := 0; i < 10; i++ {
-		prime := <-ch
-		fmt.Println(prime)
-		ch1 := make(chan int)
-		go Filter(ch, ch1, prime)
-		ch = ch1
+	// ch <-v    // Send v to channel ch.
+	// v := <-ch  // Receive from ch, and assign value to v.
+
+	fib := func(n int, c chan int) {
+		a, b := 0, 1
+		for i := 0; i < n; i++ {
+			c <- a
+			a, b = b, a+b
+		}
+		close(c)
+	}
+
+	c1 := make(chan int)
+	go fib(6, c1)
+	for i := range c1 {
+		fmt.Println(i) // receive blocks until the send side is ready
 	}
 }
