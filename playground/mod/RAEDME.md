@@ -25,7 +25,14 @@
         update go.mod / go get golang.org/x/text@v0.3.2
         go mod tidy
 
-- replace local module
+- v2 or higher
+
+        v0, v1 are omitted
+        module github.com/my/mod/v2
+        require github.com/my/mod/v2 v2.0.0
+        import "github.com/my/mod/v2/mypkg
+
+- local module
 
         default is v0.0.0
 
@@ -34,12 +41,10 @@
 
         go run world.go
 
-- v2 or higher
+- old package online
 
-        v0, v1 are omitted
-        module github.com/my/mod/v2
-        require github.com/my/mod/v2 v2.0.0
-        import "github.com/my/mod/v2/mypkg
+        "github.com/kyle11235/go/pkpath"
+        fmt.Println(pk.Foo("biu biu"))
 
 - vendor
 
