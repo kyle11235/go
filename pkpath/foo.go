@@ -2,6 +2,6 @@
 package pk
 
 // Reverse returns its argument string reversed rune-wise left to right.
-func Biu(s string) string {
-	return s + " biu"
+func Foo(s string) string {
+	return s + " from pk/foo"
 }

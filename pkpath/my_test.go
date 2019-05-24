@@ -2,7 +2,7 @@ package pk
 
 import "testing"
 
-func TestReverse(t *testing.T) {
+func TestBar(t *testing.T) {
 	cases := []struct {
 		in, want string
 	}{
@@ -11,9 +11,9 @@ func TestReverse(t *testing.T) {
 		{"", ""},
 	}
 	for _, c := range cases {
-		got := Reverse(c.in)
+		got := Bar(c.in)
 		if got != c.want {
-			t.Errorf("Reverse(%q) == %q, want %q", c.in, got, c.want)
+			t.Errorf("Bar(%q) == %q, want %q", c.in, got, c.want)
 		}
 	}
 }

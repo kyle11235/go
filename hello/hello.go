@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	fmt.Println(pk.Reverse("!elyK ,olleH"))
-	fmt.Println(pk.Biu("!elyK ,olleH"))
+	fmt.Println(pk.Foo("hello"))
+	fmt.Println(pk.Bar("!elyK ,olleH"))
 }

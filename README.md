@@ -2,43 +2,26 @@
 
 ## install
 
-        export GOPATH=~/go
-        export PATH=$GOPATH/bin:$PATH
+        export GOROOT=/usr/local/go
+        export PATH=$PATH:$GOROOT/bin
+        export GOPATH=$HOME/go
+        export PATH=$PATH:$GOPATH/bin
         source /etc/profile
 
-## tour
+## install tour
 
-- go tour
-
-        go get golang.org/x/tour
+        go get golang.org/x/tour (download whole x project into $GOPATH/src, install tour into $GOPATH/bin)
         tour
 
-- my tour
+## install my hello
+
+        go get github.com/kyle11235/go/hello
+        hello
+
+## run my tour
 
         cd tour
         go run tour.go (go build tour.go && ./tour)
-
-## install binary
-
-- go get (only checks missing project, -u checks update if project/file exists)
-
-        go get github.com/golang/example/hello (download into $GOPATH/src, install into $GOPATH/bin)
-        ./hello
-
-- local
-
-        go install github.com/kyle11235/go/hello (install into $GOPATH/bin)
-        ./hello
-
-## install package
-
-- go get
-
-        go get -u --tags nopkcs11 github.com/hyperledger/fabric/core/chaincode/shim
-
-- local
-
-        go install github.com/kyle11235/go/pkpath (install into $GOPATH/pkg)
 
 ## others
 
