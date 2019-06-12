@@ -36,13 +36,13 @@ type CouponList struct {
 
 // user coupon
 type UserCoupon struct {
-	DocType    string `json:"docType"`
-	UserID     string `json:"userID"`
-	CouponID   string `json:"couponID"`
-	CouponName string `json:"couponName"`
-	Points     int    `json:"points"`
-	Total      int    `json:"total"`
-	Used       int    `json:"used"`
+	DocType      string `json:"docType"`
+	UserID       string `json:"userID"`
+	CouponID     string `json:"couponID"`
+	CouponName   string `json:"couponName"`
+	CouponPoints int    `json:"couponPoints"`
+	Total        int    `json:"total"`
+	Used         int    `json:"used"`
 }
 
 // user coupon list
