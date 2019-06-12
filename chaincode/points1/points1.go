@@ -36,13 +36,13 @@ type CouponList struct {
 
 // user coupon
 type UserCoupon struct {
-	DocType  string `json:"docType"`
-	UserID   string `json:"userID"`
-	CouponID string `json:"couponID"`
-	Name     string `json:"couponName"`
-	Points   int    `json:"points"`
-	Total    int    `json:"total"`
-	Used     int    `json:"used"`
+	DocType    string `json:"docType"`
+	UserID     string `json:"userID"`
+	CouponID   string `json:"couponID"`
+	CouponName string `json:"couponName"`
+	Points     int    `json:"points"`
+	Total      int    `json:"total"`
+	Used       int    `json:"used"`
 }
 
 // user coupon list
@@ -476,7 +476,7 @@ func (t *SimpleChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	// create order
-	order = &Order{PREFIX_ORDER, id, userID, userCoupon.Name, count, STATUS_LOCKED}
+	order = &Order{PREFIX_ORDER, id, userID, userCoupon.CouponName, count, STATUS_LOCKED}
 	err = createOrder(stub, order)
 	if err != nil {
 		shim.Error(err.Error())
