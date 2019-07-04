@@ -23,10 +23,13 @@ func describe(i interface{}) {
 
 type Func func(s string)
 
-// Reflection is the ability to examine types; it's a form of metaprogramming
+// Reflection is the ability to check types; it's a form of metaprogramming
+// interface{} = unknown type/ever type's interface
 func main() {
 
-	// 1. empty interface are used by code that handles values of unknown type. For example, fmt.Print takes any number of arguments of type interface{}.
+	// 1. use as unknown type
+	// e.g. fmt.Printf(format string, a ...interface{}) takes any number of arguments of type interface{}.
+
 	var i interface{}
 	describe(i) // (<nil>, <nil>)
 
@@ -36,17 +39,23 @@ func main() {
 	i = &T{"hello"}
 	describe(i) // (&{hello}, *main.T)
 
-	// 2. examine the type and value, float64's interface is interface{}, which is accepted by reflect.TypeOf(i interface{})
-	var x float64 = 3.4
-	reflectType := reflect.TypeOf(x)
-	fmt.Println("type:", reflectType) // type: float64
+	// 2. check type with reflect
+	i = 3.4
+	reflectType := reflect.TypeOf(i)
+	fmt.Printf("type=%v\n", reflectType) // type=float64
 
-	reflectValue := reflect.ValueOf(x)
-	fmt.Println("type:", reflectValue.Type())                               // float64
-	fmt.Println("kind is float64:", reflectValue.Kind() == reflect.Float64) // true
-	fmt.Println("value:", reflectValue.Float())                             // 3.4
+	reflectValue := reflect.ValueOf(i)
+	fmt.Printf("type=%v\n", reflectValue.Type())                               // type=float64
+	fmt.Printf("kind is float64=%v\n", reflectValue.Kind() == reflect.Float64) // kind is float64=true
+	fmt.Printf("value=%v\n", reflectValue.Float())                             // value=3.4
 
-	// 3. recover the interface value
+	// 3. compare type
+	i = &T{"hello"}
+	if t, ok := i.(*T); ok {
+		fmt.Printf("type=%T\n", t) // type=*main.T
+		fmt.Printf("value=%v\n", t.S // value=hello
+	}
+
 	var fn Func = func(s string){
 		fmt.Println(s) 
 	}

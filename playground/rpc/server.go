@@ -11,14 +11,14 @@ import (
 	"github.com/kyle11235/go/playground/rpc/api"
 )
 
-type MyAPI api.API
+type API int
 
-func (s *MyAPI) Multiply(args *api.Args, result *int) error {
+func (a *API) Multiply(args *api.Args, result *int) error {
 	*result = args.A * args.B
 	return nil
 }
 
-func (s *MyAPI) Divide(args *api.Args, res *api.Result) error {
+func (a *API) Divide(args *api.Args, res *api.Result) error {
 	if args.B == 0 {
 		return errors.New("divide by zero")
 	}
@@ -28,8 +28,8 @@ func (s *MyAPI) Divide(args *api.Args, res *api.Result) error {
 }
 
 func main() {
-	myAPI := new(MyAPI)
-	rpc.Register(myAPI)
+	api := new(API)
+	rpc.Register(api)
 	rpc.HandleHTTP()
 	l, e := net.Listen("tcp", ":1234")
 	if e != nil {

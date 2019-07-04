@@ -10,7 +10,7 @@ import (
 )
 
 // variable
-var i, java, golang, nodejs = 10, false, false, true
+var i, java, node, golang = 10, false, false, true
 
 // Vertex is struct
 type Vertex struct {
@@ -76,8 +76,8 @@ func main() {
 	fmt.Println(a, b) // b a
 
 	// 2. variable
-	var j = "string"
-	fmt.Println(i, j, java, nodejs, golang)
+	var j = "aString"
+	fmt.Println(i, j, java, node, golang) // 10 aString false false true
 
 	// implicit variable
 	d := "d"
@@ -134,108 +134,130 @@ func main() {
 	// {1 2} {1 0} {0 0} {4 2} 4
 
 	// 7. array - static length
+
+	// 1) empty array
 	var arr1 [2]string
+	fmt.Println(arr1) // []
+
+	// 2) literal array
+	arr2 := [2]string{"aaa", "bbb"}
+	fmt.Println(arr2) // [aaa bbb]
+
+	// 3) use index
 	arr1[0] = "Hello"
 	arr1[1] = "World"
 	fmt.Println(arr1[0], arr1[1]) // Hello World
 	fmt.Println(arr1)             // [Hello World]
 
-	// literal array
-	arr1 = [2]string{"Hello", "World"}
-	fmt.Println(arr1) // [Hello World]
+	// 4) range over
+	for i, v := range arr1 {
+		fmt.Printf("index%v = %v\n", i, v)
+	}
 
-	// 8. slice -  dynamatic length, a view/reference to an array. like java arraylist
+	// 5) for loop
+	for i := 0; i < len(arr1); i++ {
+		fmt.Printf("index%d = %v\n", i, arr1[i])
+	}
 
-	// 1) make
+	// 8. slice -  dynamic length, a view/reference to an array. like java arraylist
+
+	// 1) nil slice
+	var s1 []int
+	printSlice(s1) // len=0 cap=0 []
+	if s1 == nil {
+		fmt.Println("nil!") // nil!
+	}
+
+	// 2) literal slice
+	s2 := []int{0, 1, 2, 3, 4, 5}
+	fmt.Println(s2) // [0 1 2 3 4 5]
+
+	// 3) use append, new array is allocated
+	s1 = append(s1, 1, 1)
+	printSlice(s1) // len=2 cap=2 [1 1]
+
+	// 4) use make, know how much you need
 	s3 := make([]int, 5)    // len = 5, cap = 5
 	s4 := make([]int, 0, 5) // len = 0, cap = 5
 	fmt.Println(s3, s4)     // [0 0 0 0 0] []
 
-	// 2) half open range
-	arr2 := [6]int{0, 1, 2, 3, 4, 5}
-	s2 := arr2[1:4] // half open range
-	fmt.Println(s2) // [1 2 3]
+	// 5) half open range
+	arr3 := [6]int{0, 1, 2, 3, 4, 5}
+	s5 := arr3[1:4] // half open range
+	fmt.Println(s5) // [1 2 3]
 
-	// 3) literal slice
-	s1 := []int{0, 1, 2, 3, 4, 5}
-	fmt.Println(s1) // [0 1 2 3 4 5]
+	// 6) length of slice vs capacity of array
+	s6 := []int{2, 3, 5, 7, 11, 13}
+	printSlice(s6) // len=6 cap=6 [2 3 5 7 11 13]
 
-	// 4) length of slice vs capacity of array
-	s5 := []int{2, 3, 5, 7, 11, 13}
-	printSlice(s5) // len=6 cap=6 [2 3 5 7 11 13]
+	s6 = s6[:0]    // Slice the slice to give it zero length.
+	printSlice(s6) // len=0 cap=6 []
 
-	s5 = s5[:0]    // Slice the slice to give it zero length.
-	printSlice(s5) // len=0 cap=6 []
+	s6 = s6[:4]    // Extend its length.
+	printSlice(s6) // len=4 cap=6 [2 3 5 7]
 
-	s5 = s5[:4]    // Extend its length.
-	printSlice(s5) // len=4 cap=6 [2 3 5 7]
+	s6 = s6[2:]    // Drop its first two values.
+	printSlice(s6) // len=2 cap=4 [5 7]
 
-	s5 = s5[2:]    // Drop its first two values.
-	printSlice(s5) // len=2 cap=4 [5 7]
-
-	// 5) nil slice
-	var s6 []int
-	fmt.Println(s6, len(s6), cap(s6)) // [] 0 0
-	if s6 == nil {
-		fmt.Println("nil!") // nil!
-	}
-
-	// 6) append to slice, new array is allocated
-	s6 = append(s6, 2, 3)
-	printSlice(s6) // len=3 cap=4 [6 6 6]
-
-	// 9. range over slice
+	// 7) range over
 	var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
 	for i, v := range pow {
 		fmt.Printf("index%d = %d\n", i, v)
 	}
 
-	// 10. map
-	m1 := make(map[string]Vertex)
-	m1["Bell Labs"] = Vertex{
-		10, 20, // comma is needed
+	// 8) for loop
+	for i := 0; i < len(pow); i++ {
+		fmt.Printf("index%d = %v\n", i, pow[i])
 	}
-	fmt.Println(m1["Bell Labs"]) // {10 20}
 
-	// literal map
+	// 9. map
+
+	// 1) nil map
+	var m1 map[string]int
+	fmt.Println(m1) // map[]
+	if m1 == nil {
+		fmt.Println("nil!") // nil!
+	}
+
+	// 2) literal map
 	var m2 = map[string]Vertex{
 		"Bell Labs": {10, 20},
 		"Google":    {30, 40},
 	}
 	fmt.Println(m2) // map[Bell Labs:{10 20} Google:{30 40}]
 
-	// operate map
-	m3 := make(map[string]int)
-	m3["key"] = 42
-	fmt.Println("The value:", m3["key"]) // 42
+	// 3) use make
+	m1 = make(map[string]int)
+	m1["key"] = 42
+	fmt.Printf("value=%v\n", m1["key"]) // value=42
 
-	delete(m3, "key")
-	fmt.Println("The value:", m3["key"]) // 0
+	delete(m1, "key")
+	fmt.Printf("value=%v\n", m1["key"]) // value=0
 
-	v, exist := m3["key"]
-	fmt.Println("The value:", v, "Exist?", exist) // false
+	v, exist := m1["key"]
+	fmt.Printf("value=%v, exist=%v\n", v, exist) // value=0, exist=false
 
-	// range over map
+	// 4) range over
 	for k, v := range m2 {
 		fmt.Printf("%v, %v\n", k, v)
 	}
 	// Bell Labs, {10 20}
 	// Google, {30 40}
 
-	// 11. method - function on type
+	// 10. method - function on type
 	v4 := Vertex{3, 4}
 	fmt.Println(v4.test1()) // 5
 
-	// 12. interface - declaration and implementation of interface are decoupled with object/duck typing
+	// 11. interface - data/method/interface/implementation are decoupled with object/duck typing
 	var tester Tester = &v4
 	fmt.Printf("%v, %T\n", tester.test2(), tester) // 5, *main.Vertex - the type of the interface variable
 
-	// 13. error interface
+	// 12. error interface
 	if err := run(); err != nil {
 		fmt.Println(err)
 	}
 
-	// 14. reader
+	// 13. reader
 	r := strings.NewReader("Hello, Reader!")
 	bytes := make([]byte, 8)
 	for {
@@ -257,7 +279,7 @@ func main() {
 		bytes[:n] = ""
 	*/
 
-	// 15. goroutine - lightweight thread (not actually is) managed by the Go runtime
+	// 14. goroutine - lightweight thread (not actually is) managed by the Go runtime
 	say := func(s string) {
 		for i := 0; i < 2; i++ {
 			time.Sleep(1 * time.Second)
@@ -266,8 +288,5 @@ func main() {
 	}
 	go say("in routine") // start routine
 	say("in main")       // keep main
-
-	
-	
 
 }

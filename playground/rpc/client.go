@@ -18,7 +18,7 @@ func main() {
 	// sync call
 	args := &api.Args{7, 8}
 	var result1 int
-	err = client.Call("MyAPI.Multiply", args, &result1)
+	err = client.Call("API.Multiply", args, &result1)
 	if err != nil {
 		log.Fatal("rpc error:", err)
 	}
@@ -26,7 +26,7 @@ func main() {
 
 	// Asynchronous call
 	result2 := new(api.Result)
-	divCall := client.Go("MyAPI.Divide", args, result2, nil)
+	divCall := client.Go("API.Divide", args, result2, nil)
 	_ = <-divCall.Done // will be equal to divCall
 	fmt.Printf("rpc %d/%d=%d,%d\n", args.A, args.B, result2.A, result2.B)
 
