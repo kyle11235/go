@@ -1,4 +1,4 @@
-module github.com/kyle11235/go/playground/mod1
+module github.com/kyle11235/go/playground/mod/mod1
 
 go 1.12
 

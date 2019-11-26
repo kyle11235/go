@@ -1,3 +1,5 @@
+github.com/kyle11235/go v0.0.0-20190729030720-dc104ed0938e h1:RY0VnWWDdwGJ3dU2BAW095fzQ3B+NvMMVF2/iIoBk1M=
+github.com/kyle11235/go v0.0.0-20190729030720-dc104ed0938e/go.mod h1:xNl46jlG7I9XfkVpvuxAN8HRnQdQK8cbXyM4STgTsmg=
 golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 rsc.io/quote v1.5.2/go.mod h1:LzX7hefJvL54yjefDEDHNONDjII0t9xZLPXsUe+TKr0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=

@@ -1,11 +1,16 @@
 package main
 
 import (
-    "fmt"
-    "github.com/kyle11235/go/playground/mod/mod1/foo"
+	"fmt"
 
+	pk "github.com/kyle11235/go/pkpath"
+	"github.com/kyle11235/go/playground/mod/mod1/foo"
 )
 
 func main() {
-    fmt.Println(foo.Foo())
+	// module
+	fmt.Println(foo.Foo())
+
+	// old online package
+	fmt.Println(pk.Foo("biu biu"))
 }

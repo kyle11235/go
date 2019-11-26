@@ -10,7 +10,7 @@ import (
 )
 
 // variable
-var i, java, node, golang = 10, false, false, true
+var i, java, node, golang = 100, false, false, true
 
 // Vertex is struct
 type Vertex struct {
@@ -77,7 +77,7 @@ func main() {
 
 	// 2. variable
 	var j = "aString"
-	fmt.Println(i, j, java, node, golang) // 10 aString false false true
+	fmt.Println(i, j, java, node, golang) // 100 aString false false true
 
 	// implicit variable
 	d := "d"
@@ -87,12 +87,13 @@ func main() {
 	f := float64(i)
 	fmt.Println(f) // 100
 
-	// 3. for loop
+	// 3. for loop, i only valid inside loop
 	sum := 0
 	for i := 0; i < 10; i++ {
 		sum += i
 	}
-	fmt.Println(sum) // 180
+	fmt.Println(i)   // 100
+	fmt.Println(sum) // 45
 
 	// while loop
 	for sum < 200 {
@@ -248,7 +249,7 @@ func main() {
 	v4 := Vertex{3, 4}
 	fmt.Println(v4.test1()) // 5
 
-	// 11. interface - data/method/interface/implementation are decoupled with object/duck typing
+	// 11. interface - data/method/interface/implementation are decoupled with object/duck typing(structual typing actually)
 	var tester Tester = &v4
 	fmt.Printf("%v, %T\n", tester.test2(), tester) // 5, *main.Vertex - the type of the interface variable
 

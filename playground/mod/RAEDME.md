@@ -9,12 +9,32 @@
 
 - init
 
-        go mod init / go mod init github.com/kyle11235/go/playground/mod1
+        go mod init / go mod init github.com/kyle11235/go/playground/mod/mod1
         go mod tidy
 
-- usage
+- use
 
-        go run hello.go (automatically add new dependencies with version into $GOPATH/pkg/mod, highest version of common will be used)
+        - basic (mod1 use quote)
+        // automatically add into $GOPATH/pkg/mod
+        // in go.mod, highest version of common will be used
+        go run hello.go
+
+        - use local module (mod2 use mod1)
+        // default is v0.0.0
+        require github.com/kyle11235/go/playground/mod/mod1 v0.0.0
+
+        // relative path to mod2
+        replace github.com/kyle11235/go/playground/mod/mod1 => ../mod1
+
+        go run world.go
+
+        - use old package online
+        import pk "github.com/kyle11235/go/pkpath"
+        fmt.Println(pk.Foo("biu biu"))
+
+        // automatically add into $GOPATH/pkg/mod
+        // in go.mod, require github.com/kyle11235/go v0.0.0-xxxxxx
+        go run world.go
 
 - check
 
@@ -27,24 +47,12 @@
 
 - v2 or higher
 
-        v0, v1 are omitted
+        // declare, v0, v1 are omitted
         module github.com/my/mod/v2
+
+        // use
         require github.com/my/mod/v2 v2.0.0
-        import "github.com/my/mod/v2/mypkg
-
-- local module
-
-        default is v0.0.0
-
-        require github.com/kyle11235/go/playground/mod/mod1 v0.0.0
-        replace github.com/kyle11235/go/playground/mod/mod1 => ../mod1
-
-        go run world.go
-
-- old package online
-
-        "github.com/kyle11235/go/pkpath"
-        fmt.Println(pk.Foo("biu biu"))
+        import "github.com/my/mod/v2/mypkg"
 
 - vendor
 
