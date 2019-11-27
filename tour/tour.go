@@ -59,6 +59,7 @@ func (e *MyError) Error() string {
 }
 
 // return error interface
+// same with errors.New("my error")
 func run() error {
 	return &MyError{
 		time.Now(),

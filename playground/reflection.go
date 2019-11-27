@@ -49,7 +49,7 @@ func main() {
 	fmt.Printf("kind is float64=%v\n", reflectValue.Kind() == reflect.Float64) // kind is float64=true
 	fmt.Printf("value=%v\n", reflectValue.Float())                             // value=3.4
 
-	// 3. recover type
+	// 3. recover type, check fmt.Println -> p.doPrintln -> p.printArg -> switch f := arg.(type)
 	// to pointer
 	i = &T{"hello"}
 	if t, ok := i.(*T); ok {
