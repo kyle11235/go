@@ -1,0 +1,58 @@
+{
+    "returnCode": "Success",
+    "error": "",
+    "result": {
+        "payload": {
+            "items": [
+                {
+                    "docType": "log",
+                    "id": "a.b.c@example.com",
+                    "name": "Johnny Hayes",
+                    "desc": "John Joseph Johnny Hayes (April 10, 1886 – August 25, 1965) was an American athlete, a member of the Irish American Athletic Club, and winner of the marathon race at the 1908 Summer Olympics. Hayes Olympic victory contributed to the early growth of long-distance running and marathoning in the United States. He was also the first man to win a marathon at the now official standard distance of 26 miles 385 yards when Olympic officials lengthened the distance to put the finish line in front of the Royal Box (the 1896 and 1904 Olympic marathons had been less than 25 miles long).",
+                    "yearInducted": "2008",
+                    "photo": "https://upload.wikimedia.org/wikipedia/commons/a/af/Johnny_Hayes_1908.jpg",
+                    "runnerAwards": []
+                },
+                {
+                    "docType": "log",
+                    "id": "d.e.f@example.com",
+                    "name": "Billy Mills",
+                    "desc": "William Mervin Mills born June 30, 1938, also known as Tamakoce Te Hila, is an Oglala Lakota former track and field athlete who won a gold medal in the 10,000 meter run 6.2 mi at the 1964 Tokyo Olympics. His 1964 victory is considered one of the greatest Olympic upsets because he was a virtual unknown going into the event. He was the first non-European to win the Olympic event and remains the only winner from the Americas. A United States Marine, Billy Mills is a member of the Oglala Sioux Tribe.",
+                    "yearInducted": "2000",
+                    "photo": "https://upload.wikimedia.org/wikipedia/commons/a/a9/BillyMills_cropped.jpg",
+                    "runnerAwards": []
+                },
+                {
+                    "docType": "log",
+                    "id": "x.y.z@example.com",
+                    "name": "Joan Benoit",
+                    "desc": "Joan Benoit Samuelson (born May 16, 1957) is an American Senior Grand Masters marathon runner who was the first-ever women Olympic Games marathon champion, winning the Gold medal at the 1984 Summer Olympics in Los Angeles.She held the fastest time for an American woman at the Chicago Marathon for 32 years after winning the race in 1985. Her time at the Boston Marathon was the fastest time by an American woman at that race for 28 years.",
+                    "yearInducted": "2000",
+                    "photo": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Joan_Benoit_2008.jpg",
+                    "runnerAwards": [
+                        {
+                            "docType": "runnerAward",
+                            "id": "bb01f33cde1363fd66f3ce6318ba1e08",
+                            "logID": "x.y.z@example.com",
+                            "title": "Top 10 in Melbourne marathon 2019",
+                            "marathonName": "2019 Melbourne Marathon Festival",
+                            "type": "half marathon",
+                            "time": "58:05"
+                        },
+                        {
+                            "docType": "runnerAward",
+                            "id": "f1b9bbfde6731a527a94530d54d8ca30",
+                            "logID": "x.y.z@example.com",
+                            "title": "Top 40 in Tokyo marathon 2018",
+                            "marathonName": "IOC Tokyo Olympic marathon",
+                            "type": "full marathon",
+                            "time": "2:22:01"
+                        }
+                    ]
+                }
+            ]
+        },
+        "encode": "JSON"
+    }
+}
+
