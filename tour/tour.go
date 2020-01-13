@@ -291,4 +291,12 @@ func main() {
 	go say("in routine") // start routine
 	say("in main")       // keep main
 
+	// 15. encoding
+	/*
+		1. go source code is utf8
+		2. There are two places in the language that Go does do UTF-8 decoding of strings for you.
+			when you do for i, r := range s the r is a Unicode code point as a value of type rune
+			when you do the conversion []rune(s), Go decodes the whole string to runes
+	*/
+
 }
