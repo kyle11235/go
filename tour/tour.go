@@ -299,4 +299,50 @@ func main() {
 			when you do the conversion []rune(s), Go decodes the whole string to runes
 	*/
 
+	// 16. go or golang
+	/*
+		The language is called Go. The "golang" moniker arose because the web site is golang.org,
+		not go.org, which was not available to us. Many use the golang name, though,
+		and it is handy as a label. For instance, the Twitter tag for the language is "#golang".
+		The language's name is just plain Go, regardless.
+	*/
+
+	// 17. why a new lanugage
+	/*
+
+		why -> fast and morden
+
+		Go was born out of frustration with existing languages and environments for the work we were doing at Google
+		- efficient compilation, efficient execution
+		- ease of programming
+
+		Go addressed these issues by attempting to combine the
+		- ease of programming of an interpreted dynamically typed language with the
+		- efficiency and safety of a statically typed, compiled language
+
+		It also aimed to be modern, with support for
+		- networked and
+		- multicore computing
+	*/
+
+	// 18. no vm included
+	/*
+		Go does have an extensive library, called the runtime, that is part of every Go program.
+		The runtime library implements garbage collection, concurrency, stack management,
+		and other critical features of the Go language. Although it is more central to the language,
+		Go's runtime is analogous to libc, the C library.
+
+		It is important to understand, however, that Go's runtime does not include a virtual machine,
+		such as is provided by the Java runtime. Go programs are compiled ahead of time to native machine code
+		(or JavaScript or WebAssembly, for some variant implementations). Thus, although the term is often
+		used to describe the virtual environment in which a program runs,
+		in Go the word “runtime” is just the name given to the library providing critical language services.
+	*/
+
+	// 19. new and make
+	/*
+		- new allocate memtory address(not initialize) - new(T) allocates zeroed storage for a new item of type T and returns its address
+		- make allocate and initialize slice/map/channel (initialize the internal data structure and prepares the value for use)
+	*/
+
 }
