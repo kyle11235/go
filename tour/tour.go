@@ -41,7 +41,7 @@ type Tester interface {
 	test2() float64
 }
 
-// implementation - method of same signature, with pointer as reveiver
+// implementation - method of same signature, with pointer as receiver
 func (v *Vertex) test2() float64 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y)
 }
@@ -105,11 +105,11 @@ func main() {
 	// switch
 	switch os := runtime.GOOS; os {
 	case "darwin":
-		fmt.Println("OS X.")
+		fmt.Println("OS X.") // OS X.
 	case "linux":
 		fmt.Println("Linux.")
 	default:
-		fmt.Printf("%s.", os) // OS X.
+		fmt.Printf("default=%s", os)
 	}
 
 	// 4. defer
@@ -118,9 +118,10 @@ func main() {
 
 	// 5. pointer
 	var p1 *int
-	p1 = &i
 
+	p1 = &i
 	fmt.Println(*p1) // 100
+
 	*p1 = 21
 	fmt.Println(i) // 21
 
