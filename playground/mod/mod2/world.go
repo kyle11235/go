@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	pk "github.com/kyle11235/go/pkpath"
-	"github.com/kyle11235/go/playground/mod/mod1/foo"
+
+	// "github.com/kyle11235/go/playground/mod/mod1/foo"
+	"github.com/kyle11235/go/playground/mod/mod1/v2/foo"
 )
 
 func main() {
