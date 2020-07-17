@@ -87,6 +87,7 @@ func main() {
 	// type conversion
 	f := float64(i)
 	fmt.Println(f) // 100
+	// string -> bytes = []byte(str), bytes -> string = string(data[:])
 
 	// 3. for loop, i only valid inside loop
 	sum := 0
